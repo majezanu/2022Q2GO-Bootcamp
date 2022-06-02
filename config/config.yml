@@ -1,0 +1,13 @@
+app:
+  name: 'majezanu-capstone'
+  version: '1.0.0'
+
+http:
+  port: '1000'
+
+logger:
+  log_level: 'debug'
+  rollbar_env: 'majezanu-capstone'
+
+datastore:
+  csv_path: "infrastructure/datastore/data.csv"
