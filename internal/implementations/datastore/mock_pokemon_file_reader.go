@@ -25,22 +25,17 @@ func (m *MockPokemonFileReader) EXPECT() *MockPokemonFileReaderMockRecorder {
 	return m.recorder
 }
 
-func (m *MockPokemonFileReader) Read() (io.Reader, error) {
+func (m *MockPokemonFileReader) Open() (io.ReadWriter, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Read")
-	ret0, _ := ret[0].(io.Reader)
+	ret := m.ctrl.Call(m, "Open")
+	ret0, _ := ret[0].(io.ReadWriter)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-func (mr *MockPokemonFileReaderMockRecorder) Read() *gomock.Call {
+func (mr *MockPokemonFileReaderMockRecorder) Open() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Read", reflect.TypeOf((*MockPokemonFileReader)(nil).Read))
-}
-
-func (m *MockPokemonFileReader) Write() error {
-	//TODO implement me
-	panic("implement me")
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Open", reflect.TypeOf((*MockPokemonFileReader)(nil).Open))
 }
 
 func (m *MockPokemonFileReader) Close() error {

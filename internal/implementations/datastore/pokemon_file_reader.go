@@ -11,14 +11,10 @@ type pokemonFileReader struct {
 	File    *os.File
 }
 
-func (p pokemonFileReader) Read() (io.Reader, error) {
+func (p pokemonFileReader) Open() (io.ReadWriter, error) {
 	var err error
 	p.File, err = os.Open(p.CsvPath)
 	return p.File, err
-}
-
-func (p pokemonFileReader) Write() error {
-	return nil
 }
 
 func (p pokemonFileReader) Close() error {
@@ -28,6 +24,6 @@ func (p pokemonFileReader) Close() error {
 	return p.File.Close()
 }
 
-func NewPokemonFileReader(csvPath string) datastore.ReadWriteCloser {
+func NewPokemonFileReader(csvPath string) datastore.OpenerCloser {
 	return &pokemonFileReader{csvPath, nil}
 }

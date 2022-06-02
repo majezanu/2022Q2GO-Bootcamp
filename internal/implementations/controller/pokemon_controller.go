@@ -15,6 +15,33 @@ type pokemonController struct {
 	pokemonInteractor interactor.PokemonUseCase
 }
 
+func (p pokemonController) FetchByIdAndSave(c controller.Context) error {
+	paramId := c.Param("id")
+	id, err := strconv.Atoi(paramId)
+
+	if err != nil {
+		errorResponse := custom_error.ErrorResponse{Error: fmt.Sprint(err), Code: http.StatusUnprocessableEntity}
+		return c.JSON(errorResponse.Code, errorResponse)
+	}
+
+	err = p.pokemonInteractor.GetFromApiAndSave(id)
+	if err != nil {
+		httpStatusCode := http.StatusInternalServerError
+		switch {
+		case errors.Is(err, custom_error.PokemonIdFormatError) || errors.Is(err, custom_error.BadPokemonFieldError):
+			httpStatusCode = http.StatusUnprocessableEntity
+		case errors.Is(err, custom_error.PokemonNotFoundError):
+			httpStatusCode = http.StatusNotFound
+		default:
+			httpStatusCode = http.StatusInternalServerError
+		}
+		errorResponse := custom_error.ErrorResponse{Error: fmt.Sprint(err), Code: httpStatusCode}
+		return c.JSON(errorResponse.Code, errorResponse)
+	}
+
+	return c.JSON(http.StatusCreated, "ok")
+}
+
 func (p pokemonController) GetById(c controller.Context) error {
 	paramId := c.Param("id")
 	id, err := strconv.Atoi(paramId)

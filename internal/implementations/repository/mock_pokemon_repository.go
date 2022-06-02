@@ -50,3 +50,15 @@ func (mr *MockPokemonRepositoryMockRecorder) FindAll() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "FindAll", reflect.TypeOf((*MockPokemonRepository)(nil).FindAll))
 }
+
+func (m *MockPokemonRepository) Save(pokemon *model.Pokemon) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Save", pokemon)
+	ret1, _ := ret[0].(error)
+	return ret1
+}
+
+func (mr *MockPokemonRepositoryMockRecorder) Save(pokemon *model.Pokemon) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Save", reflect.TypeOf((*MockPokemonRepository)(nil).Save), pokemon)
+}

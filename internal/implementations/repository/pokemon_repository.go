@@ -7,12 +7,13 @@ import (
 	"majezanu/capstone/domain/model"
 	"majezanu/capstone/internal/contracts/datastore"
 	"majezanu/capstone/internal/contracts/repository"
+	"os"
 	"strconv"
 	"strings"
 )
 
 type pokemonRepository struct {
-	ReadWriteCloser datastore.ReadWriteCloser
+	OpenerCloser datastore.OpenerCloser
 }
 
 const IdColumnName = "id"
@@ -50,11 +51,11 @@ func getColumnByField(field string) (*int, error) {
 }
 
 func (p pokemonRepository) FindByField(field string, value interface{}) (pokemon *model.Pokemon, err error) {
-	reader, err := p.ReadWriteCloser.Read()
+	reader, err := p.OpenerCloser.Open()
 	if err != nil {
-		return nil, custom_error.PokemonFileCantBeRead
+		return nil, custom_error.PokemonFileCantBeOpen
 	}
-	defer p.ReadWriteCloser.Close()
+	defer p.OpenerCloser.Close()
 	csvReader := csv.NewReader(reader)
 	found := false
 	column, err := getColumnByField(field)
@@ -88,11 +89,12 @@ func (p pokemonRepository) FindByField(field string, value interface{}) (pokemon
 }
 
 func (p pokemonRepository) FindAll() (pokemonList []model.Pokemon, err error) {
-	reader, err := p.ReadWriteCloser.Read()
+	fileReader := p.OpenerCloser
+	reader, err := fileReader.Open()
 	if err != nil {
-		return nil, custom_error.PokemonFileCantBeRead
+		return nil, custom_error.PokemonFileCantBeOpen
 	}
-	defer p.ReadWriteCloser.Close()
+	defer fileReader.Close()
 	csvLines, err := csv.NewReader(reader).ReadAll()
 	if err != nil {
 		return
@@ -112,7 +114,28 @@ func (p pokemonRepository) FindAll() (pokemonList []model.Pokemon, err error) {
 	return
 }
 
-func NewPokemonRepository(reader datastore.ReadWriteCloser) repository.PokemonRepository {
+func (p pokemonRepository) Save(pokemon *model.Pokemon) (err error) {
+	pokemonExistingList, err := p.FindAll()
+	if err != nil {
+		return
+	}
+	pokemonExistingList = append(pokemonExistingList, *pokemon)
+
+	file, err := os.Create("infrastructure/datastore/data.csv")
+	writer := csv.NewWriter(file)
+	var data [][]string
+	for _, item := range pokemonExistingList {
+		id := strconv.Itoa(item.Id)
+		i := []string{id, item.Name}
+		data = append(data, i)
+	}
+	writer.WriteAll(data)
+	defer writer.Flush()
+	return p.OpenerCloser.Close()
+}
+
+func NewPokemonRepository(reader datastore.OpenerCloser) repository.PokemonRepository {
+
 	return &pokemonRepository{
 		reader,
 	}
