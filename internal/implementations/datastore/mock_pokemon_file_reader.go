@@ -25,17 +25,30 @@ func (m *MockPokemonFileReader) EXPECT() *MockPokemonFileReaderMockRecorder {
 	return m.recorder
 }
 
-func (m *MockPokemonFileReader) Open() (io.ReadWriter, error) {
+func (m *MockPokemonFileReader) OpenToRead() (io.ReadWriter, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Open")
+	ret := m.ctrl.Call(m, "OpenToRead")
 	ret0, _ := ret[0].(io.ReadWriter)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
-func (mr *MockPokemonFileReaderMockRecorder) Open() *gomock.Call {
+func (mr *MockPokemonFileReaderMockRecorder) OpenToRead() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Open", reflect.TypeOf((*MockPokemonFileReader)(nil).Open))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "OpenToRead", reflect.TypeOf((*MockPokemonFileReader)(nil).OpenToRead))
+}
+
+func (m *MockPokemonFileReader) OpenToWrite() (io.ReadWriter, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "OpenToWrite")
+	ret0, _ := ret[0].(io.ReadWriter)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+func (mr *MockPokemonFileReaderMockRecorder) OpenToWrite() *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "OpenToWrite", reflect.TypeOf((*MockPokemonFileReader)(nil).OpenToWrite))
 }
 
 func (m *MockPokemonFileReader) Close() error {
