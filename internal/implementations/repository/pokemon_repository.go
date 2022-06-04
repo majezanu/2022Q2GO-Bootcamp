@@ -7,7 +7,6 @@ import (
 	"majezanu/capstone/domain/model"
 	"majezanu/capstone/internal/contracts/datastore"
 	"majezanu/capstone/internal/contracts/repository"
-	"os"
 	"strconv"
 	"strings"
 )
@@ -51,7 +50,7 @@ func getColumnByField(field string) (*int, error) {
 }
 
 func (p pokemonRepository) FindByField(field string, value interface{}) (pokemon *model.Pokemon, err error) {
-	reader, err := p.OpenerCloser.Open()
+	reader, err := p.OpenerCloser.OpenToRead()
 	if err != nil {
 		return nil, custom_error.PokemonFileCantBeOpen
 	}
@@ -90,7 +89,7 @@ func (p pokemonRepository) FindByField(field string, value interface{}) (pokemon
 
 func (p pokemonRepository) FindAll() (pokemonList []model.Pokemon, err error) {
 	fileReader := p.OpenerCloser
-	reader, err := fileReader.Open()
+	reader, err := fileReader.OpenToRead()
 	if err != nil {
 		return nil, custom_error.PokemonFileCantBeOpen
 	}
@@ -115,22 +114,23 @@ func (p pokemonRepository) FindAll() (pokemonList []model.Pokemon, err error) {
 }
 
 func (p pokemonRepository) Save(pokemon *model.Pokemon) (err error) {
-	pokemonExistingList, err := p.FindAll()
+	file, err := p.OpenerCloser.OpenToWrite()
+	writer := csv.NewWriter(file)
+
+	id := strconv.Itoa(pokemon.Id)
+	newData := []string{id, pokemon.Name}
+
+	err = writer.Write(newData)
 	if err != nil {
 		return
 	}
-	pokemonExistingList = append(pokemonExistingList, *pokemon)
 
-	file, err := os.Create("infrastructure/datastore/data.csv")
-	writer := csv.NewWriter(file)
-	var data [][]string
-	for _, item := range pokemonExistingList {
-		id := strconv.Itoa(item.Id)
-		i := []string{id, item.Name}
-		data = append(data, i)
+	writer.Flush()
+	err = writer.Error()
+	if err != nil {
+		return err
 	}
-	writer.WriteAll(data)
-	defer writer.Flush()
+
 	return p.OpenerCloser.Close()
 }
 

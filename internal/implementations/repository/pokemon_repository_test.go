@@ -39,7 +39,7 @@ func TestPokemonRepository_FindByField(t *testing.T) {
 			mock: func() {
 				var buff *bytes.Buffer
 				buff = bytes.NewBufferString(mockedCsv)
-				fileReader.EXPECT().Open().Return(buff, os.ErrNotExist)
+				fileReader.EXPECT().OpenToRead().Return(buff, os.ErrNotExist)
 				fileReader.EXPECT().Close().Return(nil)
 			},
 			field: "id",
@@ -52,7 +52,7 @@ func TestPokemonRepository_FindByField(t *testing.T) {
 			mock: func() {
 				var buff *bytes.Buffer
 				buff = bytes.NewBufferString(mockedCsv)
-				fileReader.EXPECT().Open().Return(buff, nil)
+				fileReader.EXPECT().OpenToRead().Return(buff, nil)
 				fileReader.EXPECT().Close().Return(nil)
 			},
 			field: "id",
@@ -65,7 +65,7 @@ func TestPokemonRepository_FindByField(t *testing.T) {
 			mock: func() {
 				var buff *bytes.Buffer
 				buff = bytes.NewBufferString(mockedCsv)
-				fileReader.EXPECT().Open().Return(buff, nil)
+				fileReader.EXPECT().OpenToRead().Return(buff, nil)
 				fileReader.EXPECT().Close().Return(nil)
 			},
 			field: "name",
@@ -78,7 +78,7 @@ func TestPokemonRepository_FindByField(t *testing.T) {
 			mock: func() {
 				var buff *bytes.Buffer
 				buff = bytes.NewBufferString("")
-				fileReader.EXPECT().Open().Return(buff, nil)
+				fileReader.EXPECT().OpenToRead().Return(buff, nil)
 				fileReader.EXPECT().Close().Return(nil)
 			},
 			field: "id",
@@ -91,7 +91,7 @@ func TestPokemonRepository_FindByField(t *testing.T) {
 			mock: func() {
 				var buff *bytes.Buffer
 				buff = bytes.NewBufferString(mockedCsv)
-				fileReader.EXPECT().Open().Return(buff, nil)
+				fileReader.EXPECT().OpenToRead().Return(buff, nil)
 				fileReader.EXPECT().Close().Return(nil)
 			},
 			field: "gender",
@@ -104,7 +104,7 @@ func TestPokemonRepository_FindByField(t *testing.T) {
 			mock: func() {
 				var buff *bytes.Buffer
 				buff = bytes.NewBufferString(mockedCsv)
-				fileReader.EXPECT().Open().Return(buff, nil)
+				fileReader.EXPECT().OpenToRead().Return(buff, nil)
 				fileReader.EXPECT().Close().Return(nil)
 			},
 			field: "id",
@@ -117,7 +117,7 @@ func TestPokemonRepository_FindByField(t *testing.T) {
 			mock: func() {
 				var buff *bytes.Buffer
 				buff = bytes.NewBufferString(mockedCsv)
-				fileReader.EXPECT().Open().Return(buff, nil)
+				fileReader.EXPECT().OpenToRead().Return(buff, nil)
 				fileReader.EXPECT().Close().Return(nil)
 			},
 			field: "name",
@@ -130,7 +130,7 @@ func TestPokemonRepository_FindByField(t *testing.T) {
 			mock: func() {
 				var buff *bytes.Buffer
 				buff = bytes.NewBufferString("b,Picachu")
-				fileReader.EXPECT().Open().Return(buff, nil)
+				fileReader.EXPECT().OpenToRead().Return(buff, nil)
 				fileReader.EXPECT().Close().Return(nil)
 			},
 			field: "name",
@@ -169,7 +169,7 @@ func TestNewPokemonRepository_FindAll(t *testing.T) {
 			mock: func() {
 				var buff *bytes.Buffer
 				buff = bytes.NewBufferString(mockedCsv)
-				fileReader.EXPECT().Open().Return(buff, os.ErrNotExist)
+				fileReader.EXPECT().OpenToRead().Return(buff, os.ErrNotExist)
 				fileReader.EXPECT().Close().Return(nil)
 			},
 			res: nil,
@@ -180,7 +180,7 @@ func TestNewPokemonRepository_FindAll(t *testing.T) {
 			mock: func() {
 				var buff *bytes.Buffer
 				buff = bytes.NewBufferString(mockedCsv)
-				fileReader.EXPECT().Open().Return(buff, nil)
+				fileReader.EXPECT().OpenToRead().Return(buff, nil)
 				fileReader.EXPECT().Close().Return(nil)
 			},
 			res: []model.Pokemon{
@@ -194,7 +194,7 @@ func TestNewPokemonRepository_FindAll(t *testing.T) {
 			mock: func() {
 				var buff *bytes.Buffer
 				buff = bytes.NewBufferString("")
-				fileReader.EXPECT().Open().Return(buff, nil)
+				fileReader.EXPECT().OpenToRead().Return(buff, nil)
 				fileReader.EXPECT().Close().Return(nil)
 			},
 			res: []model.Pokemon(nil),
@@ -205,7 +205,7 @@ func TestNewPokemonRepository_FindAll(t *testing.T) {
 			mock: func() {
 				var buff *bytes.Buffer
 				buff = bytes.NewBufferString("b,Picachu\n1,Charmander")
-				fileReader.EXPECT().Open().Return(buff, nil)
+				fileReader.EXPECT().OpenToRead().Return(buff, nil)
 				fileReader.EXPECT().Close().Return(nil)
 			},
 			res: []model.Pokemon(nil),
@@ -241,7 +241,7 @@ func TestNewPokemonRepository_Save(t *testing.T) {
 		{
 			name: "Pokemon save success",
 			mock: func(buff *bytes.Buffer) {
-				fileReader.EXPECT().Open().Return(buff, nil)
+				fileReader.EXPECT().OpenToWrite().Return(buff, nil)
 				fileReader.EXPECT().Close().Return(nil)
 			},
 			finalCsv: "1,Picachu\n2,Charmander\n3,Charizard\n",
@@ -251,7 +251,7 @@ func TestNewPokemonRepository_Save(t *testing.T) {
 		{
 			name: "Pokemon alrady exists",
 			mock: func(buff *bytes.Buffer) {
-				fileReader.EXPECT().Open().Return(buff, nil)
+				fileReader.EXPECT().OpenToWrite().Return(buff, nil)
 				fileReader.EXPECT().Close().Return(nil)
 			},
 			finalCsv: "1,Picachu\n2,Charmander\n1,Picachu\n",
@@ -261,7 +261,7 @@ func TestNewPokemonRepository_Save(t *testing.T) {
 		{
 			name: "Pokemon save error",
 			mock: func(buff *bytes.Buffer) {
-				fileReader.EXPECT().Open().Return(nil, os.ErrNotExist)
+				fileReader.EXPECT().OpenToWrite().Return(nil, os.ErrNotExist)
 				fileReader.EXPECT().Close().Return(nil)
 			},
 			finalCsv: "1,Picachu\n2,Charmander\n",
