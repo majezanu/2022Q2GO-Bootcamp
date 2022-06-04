@@ -2,8 +2,8 @@ package datastore
 
 import "io"
 
-type ReadWriteCloser interface {
-	Read() (io.Reader, error)
-	Write() error
+type OpenerCloser interface {
+	OpenToRead() (io.ReadWriter, error)
+	OpenToWrite() (io.ReadWriter, error)
 	Close() error
 }

@@ -12,7 +12,7 @@ import (
 )
 
 type pokemonRepository struct {
-	ReadWriteCloser datastore.ReadWriteCloser
+	OpenerCloser datastore.OpenerCloser
 }
 
 const IdColumnName = "id"
@@ -50,11 +50,11 @@ func getColumnByField(field string) (*int, error) {
 }
 
 func (p pokemonRepository) FindByField(field string, value interface{}) (pokemon *model.Pokemon, err error) {
-	reader, err := p.ReadWriteCloser.Read()
+	reader, err := p.OpenerCloser.OpenToRead()
 	if err != nil {
-		return nil, custom_error.PokemonFileCantBeRead
+		return nil, custom_error.PokemonFileCantBeOpen
 	}
-	defer p.ReadWriteCloser.Close()
+	defer p.OpenerCloser.Close()
 	csvReader := csv.NewReader(reader)
 	found := false
 	column, err := getColumnByField(field)
@@ -88,11 +88,12 @@ func (p pokemonRepository) FindByField(field string, value interface{}) (pokemon
 }
 
 func (p pokemonRepository) FindAll() (pokemonList []model.Pokemon, err error) {
-	reader, err := p.ReadWriteCloser.Read()
+	fileReader := p.OpenerCloser
+	reader, err := fileReader.OpenToRead()
 	if err != nil {
-		return nil, custom_error.PokemonFileCantBeRead
+		return nil, custom_error.PokemonFileCantBeOpen
 	}
-	defer p.ReadWriteCloser.Close()
+	defer fileReader.Close()
 	csvLines, err := csv.NewReader(reader).ReadAll()
 	if err != nil {
 		return
@@ -112,7 +113,29 @@ func (p pokemonRepository) FindAll() (pokemonList []model.Pokemon, err error) {
 	return
 }
 
-func NewPokemonRepository(reader datastore.ReadWriteCloser) repository.PokemonRepository {
+func (p pokemonRepository) Save(pokemon *model.Pokemon) (err error) {
+	file, err := p.OpenerCloser.OpenToWrite()
+	writer := csv.NewWriter(file)
+
+	id := strconv.Itoa(pokemon.Id)
+	newData := []string{id, pokemon.Name}
+
+	err = writer.Write(newData)
+	if err != nil {
+		return
+	}
+
+	writer.Flush()
+	err = writer.Error()
+	if err != nil {
+		return err
+	}
+
+	return p.OpenerCloser.Close()
+}
+
+func NewPokemonRepository(reader datastore.OpenerCloser) repository.PokemonRepository {
+
 	return &pokemonRepository{
 		reader,
 	}

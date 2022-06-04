@@ -12,6 +12,8 @@ func NewRouter(e *echo.Echo, c controller.AppController) *echo.Echo {
 
 	pokemonRoutes := e.Group("/pokemon")
 	pokemonRoutes.GET("", func(context echo.Context) error { return c.Pokemon.GetAll(context) })
+	pokemonRoutes.GET("/fetch/:id", func(context echo.Context) error { return c.Pokemon.FetchByIdAndSave(context) })
+	pokemonRoutes.GET("/by-name/:name", func(context echo.Context) error { return c.Pokemon.GetByName(context) })
 	pokemonRoutes.GET("/:id", func(context echo.Context) error { return c.Pokemon.GetById(context) })
 
 	return e

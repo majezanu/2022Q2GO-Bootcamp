@@ -10,4 +10,10 @@ var PokemonFieldNotMappedError = errors.New("pokemon field is not mapped")
 
 var PokemonIdFormatError = errors.New("pokemon id cannot be formatted")
 
-var PokemonFileCantBeRead = errors.New("pokemon file cannot be read")
+var PokemonFileCantBeOpen = errors.New("pokemon file cannot be open")
+
+var PokemonApiTimeoutError = errors.New("pokemon api timeout")
+
+var PokemonSaveError = errors.New("pokemon can't be saved")
+
+var PokemonAlreadyExistError = errors.New("pokemon already exist")

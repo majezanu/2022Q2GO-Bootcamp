@@ -3,16 +3,18 @@ package interactor
 import (
 	"majezanu/capstone/domain/custom_error"
 	"majezanu/capstone/domain/model"
+	"majezanu/capstone/internal/contracts/client"
 	usecase "majezanu/capstone/internal/contracts/interactor"
 	"majezanu/capstone/internal/contracts/repository"
 )
 
 type pokemonUseCase struct {
 	Repository repository.PokemonRepository
+	Client     client.PokemonClient
 }
 
-func NewPokemonUseCase(repo repository.PokemonRepository) usecase.PokemonUseCase {
-	return &pokemonUseCase{repo}
+func NewPokemonUseCase(repo repository.PokemonRepository, client client.PokemonClient) usecase.PokemonUseCase {
+	return &pokemonUseCase{repo, client}
 }
 
 func processResult(input *model.Pokemon, errInput error) (pokemon *model.Pokemon, err error) {
@@ -49,4 +51,16 @@ func (useCase *pokemonUseCase) GetAll() (pokemonList []model.Pokemon, err error)
 	}
 
 	return
+}
+
+func (useCase *pokemonUseCase) GetFromApiAndSave(id int) (err error) {
+	oldPokemon, err := useCase.GetById(id)
+	if oldPokemon != nil {
+		return custom_error.PokemonAlreadyExistError
+	}
+	pokemon, err := useCase.Client.GetById(id)
+	if err != nil {
+		return
+	}
+	return useCase.Repository.Save(pokemon)
 }

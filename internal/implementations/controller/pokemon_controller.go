@@ -1,8 +1,6 @@
 package controller
 
 import (
-	"errors"
-	"fmt"
 	"majezanu/capstone/domain/custom_error"
 	"majezanu/capstone/domain/model"
 	"majezanu/capstone/internal/contracts/controller"
@@ -15,37 +13,54 @@ type pokemonController struct {
 	pokemonInteractor interactor.PokemonUseCase
 }
 
+func responseError(c controller.Context, err error) error {
+	errorResponse := custom_error.NewErrorResponse(err)
+	return c.JSON(errorResponse.Code, errorResponse)
+}
+
+func (p pokemonController) FetchByIdAndSave(c controller.Context) error {
+	paramId := c.Param("id")
+	id, err := strconv.Atoi(paramId)
+
+	if err != nil {
+		return responseError(c, custom_error.PokemonIdFormatError)
+	}
+
+	err = p.pokemonInteractor.GetFromApiAndSave(id)
+	if err != nil {
+		return responseError(c, err)
+	}
+
+	return c.JSON(http.StatusCreated, "ok")
+}
+
 func (p pokemonController) GetById(c controller.Context) error {
 	paramId := c.Param("id")
 	id, err := strconv.Atoi(paramId)
 
 	if err != nil {
-		errorResponse := custom_error.ErrorResponse{Error: fmt.Sprint(err), Code: http.StatusUnprocessableEntity}
-		return c.JSON(errorResponse.Code, errorResponse)
+		return responseError(c, custom_error.PokemonIdFormatError)
 	}
 
 	var u *model.Pokemon
 	u, err = p.pokemonInteractor.GetById(id)
 	if err != nil {
-		httpStatusCode := http.StatusInternalServerError
-		switch {
-		case errors.Is(err, custom_error.PokemonIdFormatError) || errors.Is(err, custom_error.BadPokemonFieldError):
-			httpStatusCode = http.StatusUnprocessableEntity
-		case errors.Is(err, custom_error.PokemonNotFoundError):
-			httpStatusCode = http.StatusNotFound
-		default:
-			httpStatusCode = http.StatusInternalServerError
-		}
-		errorResponse := custom_error.ErrorResponse{Error: fmt.Sprint(err), Code: httpStatusCode}
-		return c.JSON(errorResponse.Code, errorResponse)
+		return responseError(c, err)
 	}
 
 	return c.JSON(http.StatusOK, u)
 }
 
 func (p pokemonController) GetByName(c controller.Context) error {
-	//TODO implement me
-	panic("implement me")
+	paramName := c.Param("name")
+
+	var u *model.Pokemon
+	u, err := p.pokemonInteractor.GetByName(paramName)
+	if err != nil {
+		return responseError(c, err)
+	}
+
+	return c.JSON(http.StatusOK, u)
 }
 
 func (p *pokemonController) GetAll(c controller.Context) error {
@@ -53,15 +68,7 @@ func (p *pokemonController) GetAll(c controller.Context) error {
 
 	u, err := p.pokemonInteractor.GetAll()
 	if err != nil {
-		httpStatusCode := http.StatusInternalServerError
-		switch {
-		case errors.Is(err, custom_error.PokemonIdFormatError):
-			httpStatusCode = http.StatusUnprocessableEntity
-		default:
-			httpStatusCode = http.StatusInternalServerError
-		}
-		errorResponse := custom_error.ErrorResponse{Error: fmt.Sprint(err), Code: httpStatusCode}
-		return c.JSON(errorResponse.Code, errorResponse)
+		return responseError(c, err)
 	}
 	return c.JSON(http.StatusOK, u)
 }
