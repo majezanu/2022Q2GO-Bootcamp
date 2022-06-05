@@ -53,14 +53,17 @@ func (useCase *pokemonUseCase) GetAll() (pokemonList []model.Pokemon, err error)
 	return
 }
 
-func (useCase *pokemonUseCase) GetFromApiAndSave(id int) (err error) {
-	oldPokemon, err := useCase.GetById(id)
+func (useCase *pokemonUseCase) GetFromApiAndSave(id int) (pokemon *model.Pokemon, err error) {
+	oldPokemon, _ := useCase.GetById(id)
 	if oldPokemon != nil {
-		return custom_error.PokemonAlreadyExistError
+		pokemon = oldPokemon
+		err = custom_error.PokemonAlreadyExistError
+		return
 	}
-	pokemon, err := useCase.Client.GetById(id)
+	pokemon, err = useCase.Client.GetById(id)
 	if err != nil {
 		return
 	}
-	return useCase.Repository.Save(pokemon)
+	err = useCase.Repository.Save(pokemon)
+	return
 }

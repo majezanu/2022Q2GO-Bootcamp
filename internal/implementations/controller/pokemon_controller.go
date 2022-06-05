@@ -26,12 +26,12 @@ func (p pokemonController) FetchByIdAndSave(c controller.Context) error {
 		return responseError(c, custom_error.PokemonIdFormatError)
 	}
 
-	err = p.pokemonInteractor.GetFromApiAndSave(id)
-	if err != nil {
+	pokemon, err := p.pokemonInteractor.GetFromApiAndSave(id)
+	if pokemon == nil && err != nil {
 		return responseError(c, err)
 	}
 
-	return c.JSON(http.StatusCreated, "ok")
+	return c.JSON(http.StatusCreated, custom_error.NewPokemonWithError(pokemon, err))
 }
 
 func (p pokemonController) GetById(c controller.Context) error {
