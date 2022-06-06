@@ -24,6 +24,50 @@ var fakePokemonData = []model.Pokemon{
 		Id:   1,
 		Name: "Picachu",
 	},
+	{
+		Id:   2,
+		Name: "Charmander",
+	},
+	{
+		Id:   3,
+		Name: "Charizard",
+	},
+	{
+		Id:   4,
+		Name: "Charmilion",
+	},
+	{
+		Id:   5,
+		Name: "Picachu2",
+	},
+	{
+		Id:   6,
+		Name: "Charmander2",
+	},
+	{
+		Id:   7,
+		Name: "Charizard2",
+	},
+	{
+		Id:   8,
+		Name: "Charmilion2",
+	},
+	{
+		Id:   9,
+		Name: "Picachu3",
+	},
+	{
+		Id:   10,
+		Name: "Charmander3",
+	},
+	{
+		Id:   11,
+		Name: "Charizard3",
+	},
+	{
+		Id:   12,
+		Name: "Charmilion3",
+	},
 }
 
 // test function

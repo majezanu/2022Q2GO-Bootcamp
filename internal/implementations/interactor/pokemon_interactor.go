@@ -13,8 +13,22 @@ type pokemonUseCase struct {
 	Client     client.PokemonClient
 }
 
+const EVEN = "even"
+const ODD = "odd"
+
 func NewPokemonUseCase(repo repository.PokemonRepository, client client.PokemonClient) usecase.PokemonUseCase {
 	return &pokemonUseCase{repo, client}
+}
+
+func (useCase *pokemonUseCase) GetMultiple(idType string, items int, itemsPerWorker int) (result []model.Pokemon, err error) {
+	if idType != EVEN && idType != ODD {
+		err = custom_error.PokemonIdTypeError
+		return
+	}
+
+	result, err = useCase.Repository.FindAllByIdType(idType, items, itemsPerWorker)
+
+	return
 }
 
 func processResult(input *model.Pokemon, errInput error) (pokemon *model.Pokemon, err error) {

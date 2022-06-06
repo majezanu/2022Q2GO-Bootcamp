@@ -18,6 +18,18 @@ func responseError(c controller.Context, err error) error {
 	return c.JSON(errorResponse.Code, errorResponse)
 }
 
+func (p pokemonController) GetMultiple(c controller.Context) error {
+	var payload model.MultipleFilter
+	if err := c.Bind(&payload); err != nil {
+		return responseError(c, err)
+	}
+	pokemonList, err := p.pokemonInteractor.GetMultiple(payload.IdType, payload.Items, payload.ItemsPerWorker)
+	if err != nil {
+		return responseError(c, err)
+	}
+	return c.JSON(http.StatusOK, pokemonList)
+}
+
 func (p pokemonController) FetchByIdAndSave(c controller.Context) error {
 	paramId := c.Param("id")
 	id, err := strconv.Atoi(paramId)
