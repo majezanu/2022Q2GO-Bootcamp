@@ -1,0 +1,143 @@
+{
+	"info": {
+		"_postman_id": "e35c9143-cd02-4a64-b59d-14e7bd56163a",
+		"name": "Capstone Project",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "2162833"
+	},
+	"item": [
+		{
+			"name": "Get pokemon filtered",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:1000/pokemon/multiple?type=odd&items=2&items_per_worker=1",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "1000",
+					"path": [
+						"pokemon",
+						"multiple"
+					],
+					"query": [
+						{
+							"key": "type",
+							"value": "odd"
+						},
+						{
+							"key": "items",
+							"value": "2"
+						},
+						{
+							"key": "items_per_worker",
+							"value": "1"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get pokemon by id",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:1000/pokemon/:id",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "1000",
+					"path": [
+						"pokemon",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "11"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get pokemon by name",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:1000/pokemon/by-name/:name",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "1000",
+					"path": [
+						"pokemon",
+						"by-name",
+						":name"
+					],
+					"variable": [
+						{
+							"key": "name",
+							"value": "charmander"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Fetch pokemon from external",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:1000/pokemon/fetch/:id",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "1000",
+					"path": [
+						"pokemon",
+						"fetch",
+						":id"
+					],
+					"variable": [
+						{
+							"key": "id",
+							"value": "11"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get all pokemon",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:1000/pokemon",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "1000",
+					"path": [
+						"pokemon"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
