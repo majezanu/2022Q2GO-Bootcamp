@@ -25,6 +25,14 @@ func (useCase *pokemonUseCase) GetMultiple(idType string, items int, itemsPerWor
 		err = custom_error.PokemonIdTypeError
 		return
 	}
+	if items == 0 {
+		err = custom_error.PokemonItemsError
+		return
+	}
+	if itemsPerWorker == 0 {
+		err = custom_error.PokemonItemsPerWorkerError
+		return
+	}
 
 	result, err = useCase.Repository.FindAllByIdType(idType, items, itemsPerWorker)
 

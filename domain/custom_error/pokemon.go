@@ -20,4 +20,6 @@ var PokemonAlreadyExistError = errors.New("pokemon already exist")
 
 var PokemonIdTypeError = errors.New("pokemon id type should be 'odd' or 'even'")
 
-var PokemonItemsPerWorkerError = errors.New("items per worker should be equal or less tan items")
+var PokemonItemsError = errors.New("items should be more than 0")
+
+var PokemonItemsPerWorkerError = errors.New("items per worker should be more than 0")
