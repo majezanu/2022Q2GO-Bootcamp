@@ -285,3 +285,73 @@ func TestNewPokemonRepository_Save(t *testing.T) {
 		})
 	}
 }
+
+func TestPokemonRepository_FindAllByIdType(t *testing.T) {
+	fileReader := setup(t)
+	type test struct {
+		name           string
+		mock           func(buff *bytes.Buffer)
+		data           string
+		idType         string
+		items          int
+		itemsPerWorker int
+		res            []model.Pokemon
+		err            error
+	}
+	tests := []test{
+		{
+			name: "One item - Odd",
+			mock: func(buff *bytes.Buffer) {
+				fileReader.EXPECT().OpenToRead().Return(buff, nil)
+				fileReader.EXPECT().Close().Return(nil)
+			},
+			data:           "1,Picachu\n2,Charmander\n3,Mew\n4,Charizard\n5,Evee",
+			idType:         ODD,
+			items:          1,
+			itemsPerWorker: 3,
+			res:            []model.Pokemon{{1, "Picachu"}},
+			err:            nil,
+		},
+		{
+			name: "One items - Even",
+			mock: func(buff *bytes.Buffer) {
+				fileReader.EXPECT().OpenToRead().Return(buff, nil)
+				fileReader.EXPECT().Close().Return(nil)
+			},
+			data:           "1,Picachu\n2,Charmander\n3,Mew\n4,Charizard\n5,Evee",
+			idType:         EVEN,
+			items:          1,
+			itemsPerWorker: 3,
+			res:            []model.Pokemon{{2, "Charmander"}},
+			err:            nil,
+		},
+		{
+			name: "Two items - Odd",
+			mock: func(buff *bytes.Buffer) {
+				fileReader.EXPECT().OpenToRead().Return(buff, nil)
+				fileReader.EXPECT().Close().Return(nil)
+			},
+			data:           "1,Picachu\n2,Charmander\n3,Mew\n4,Charizard\n5,Evee",
+			idType:         ODD,
+			items:          2,
+			itemsPerWorker: 3,
+			res:            []model.Pokemon{{1, "Picachu"}, {3, "Mew"}},
+			err:            nil,
+		},
+	}
+	for _, tc := range tests {
+		tc := tc
+
+		t.Run(tc.name, func(t *testing.T) {
+			var buff *bytes.Buffer
+			buff = bytes.NewBufferString(tc.data)
+			tc.mock(buff)
+
+			res, err := NewPokemonRepository(fileReader).FindAllByIdType(tc.idType, tc.items, tc.itemsPerWorker)
+			expectedResult := tc.res
+			expectedError := tc.err
+			require.Equal(t, expectedResult, res)
+			require.ErrorIs(t, expectedError, err)
+		})
+	}
+}

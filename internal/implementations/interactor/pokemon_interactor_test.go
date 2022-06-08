@@ -24,6 +24,50 @@ var fakePokemonData = []model.Pokemon{
 		Id:   1,
 		Name: "Picachu",
 	},
+	{
+		Id:   2,
+		Name: "Charmander",
+	},
+	{
+		Id:   3,
+		Name: "Charizard",
+	},
+	{
+		Id:   4,
+		Name: "Charmilion",
+	},
+	{
+		Id:   5,
+		Name: "Picachu2",
+	},
+	{
+		Id:   6,
+		Name: "Charmander2",
+	},
+	{
+		Id:   7,
+		Name: "Charizard2",
+	},
+	{
+		Id:   8,
+		Name: "Charmilion2",
+	},
+	{
+		Id:   9,
+		Name: "Picachu3",
+	},
+	{
+		Id:   10,
+		Name: "Charmander3",
+	},
+	{
+		Id:   11,
+		Name: "Charizard3",
+	},
+	{
+		Id:   12,
+		Name: "Charmilion3",
+	},
 }
 
 // test function
@@ -212,6 +256,7 @@ func TestPokemonUseCase_GetFromApiAndSave(t *testing.T) {
 	type test struct {
 		name string
 		mock func()
+		res  *model.Pokemon
 		err  error
 	}
 
@@ -223,6 +268,7 @@ func TestPokemonUseCase_GetFromApiAndSave(t *testing.T) {
 				client.EXPECT().GetById(1).Return(nil, custom_error.PokemonNotFoundError)
 				repo.EXPECT().Save(nil).Times(1)
 			},
+			res: nil,
 			err: custom_error.PokemonNotFoundError,
 		},
 		{
@@ -235,6 +281,10 @@ func TestPokemonUseCase_GetFromApiAndSave(t *testing.T) {
 				repo.EXPECT().FindByField("id", 1).Return(nil, nil)
 				client.EXPECT().GetById(1).Return(&pokemon, nil)
 				repo.EXPECT().Save(&pokemon).Times(1).Return(custom_error.PokemonSaveError)
+			},
+			res: &model.Pokemon{
+				Id:   1,
+				Name: "Pikachu",
 			},
 			err: custom_error.PokemonSaveError,
 		},
@@ -249,6 +299,10 @@ func TestPokemonUseCase_GetFromApiAndSave(t *testing.T) {
 				client.EXPECT().GetById(1).Times(0).Return(&pokemon, nil)
 				repo.EXPECT().Save(&pokemon).Times(0).Return(custom_error.PokemonSaveError)
 			},
+			res: &model.Pokemon{
+				Id:   1,
+				Name: "Pikachu",
+			},
 			err: custom_error.PokemonAlreadyExistError,
 		},
 		{
@@ -262,6 +316,10 @@ func TestPokemonUseCase_GetFromApiAndSave(t *testing.T) {
 				client.EXPECT().GetById(1).Return(&pokemon, nil)
 				repo.EXPECT().Save(&pokemon).Times(1).Return(nil)
 			},
+			res: &model.Pokemon{
+				Id:   1,
+				Name: "Pikachu",
+			},
 			err: nil,
 		},
 	}
@@ -273,8 +331,9 @@ func TestPokemonUseCase_GetFromApiAndSave(t *testing.T) {
 			t.Parallel()
 
 			tc.mock()
-			err := NewPokemonUseCase(repo, client).GetFromApiAndSave(1)
+			pokemon, err := NewPokemonUseCase(repo, client).GetFromApiAndSave(1)
 			expectedError := tc.err
+			require.Equal(t, tc.res, pokemon)
 			require.ErrorIs(t, expectedError, err)
 		})
 	}

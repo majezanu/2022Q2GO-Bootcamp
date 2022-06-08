@@ -18,6 +18,18 @@ func responseError(c controller.Context, err error) error {
 	return c.JSON(errorResponse.Code, errorResponse)
 }
 
+func (p pokemonController) GetMultiple(c controller.Context) error {
+	var payload model.MultipleFilter
+	if err := c.Bind(&payload); err != nil {
+		return responseError(c, err)
+	}
+	pokemonList, err := p.pokemonInteractor.GetMultiple(payload.IdType, payload.Items, payload.ItemsPerWorker)
+	if err != nil {
+		return responseError(c, err)
+	}
+	return c.JSON(http.StatusOK, pokemonList)
+}
+
 func (p pokemonController) FetchByIdAndSave(c controller.Context) error {
 	paramId := c.Param("id")
 	id, err := strconv.Atoi(paramId)
@@ -26,12 +38,12 @@ func (p pokemonController) FetchByIdAndSave(c controller.Context) error {
 		return responseError(c, custom_error.PokemonIdFormatError)
 	}
 
-	err = p.pokemonInteractor.GetFromApiAndSave(id)
-	if err != nil {
+	pokemon, err := p.pokemonInteractor.GetFromApiAndSave(id)
+	if pokemon == nil && err != nil {
 		return responseError(c, err)
 	}
 
-	return c.JSON(http.StatusCreated, "ok")
+	return c.JSON(http.StatusCreated, custom_error.NewPokemonWithError(pokemon, err))
 }
 
 func (p pokemonController) GetById(c controller.Context) error {

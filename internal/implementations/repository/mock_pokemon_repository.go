@@ -11,6 +11,11 @@ type MockPokemonRepository struct {
 	recorder *MockPokemonRepositoryMockRecorder
 }
 
+func (m *MockPokemonRepository) FindAllByIdType(idType string, items int, itemsPerWorker int) ([]model.Pokemon, error) {
+	//TODO implement me
+	panic("implement me")
+}
+
 type MockPokemonRepositoryMockRecorder struct {
 	mock *MockPokemonRepository
 }
