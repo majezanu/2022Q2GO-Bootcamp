@@ -213,6 +213,9 @@ func (p pokemonRepository) FindAllByIdType(idType string, items int, itemsPerWor
 
 func (p pokemonRepository) Save(pokemon *model.Pokemon) (err error) {
 	file, err := p.OpenerCloser.OpenToWrite()
+	if err != nil {
+		return
+	}
 	writer := csv.NewWriter(file)
 
 	id := strconv.Itoa(pokemon.Id)

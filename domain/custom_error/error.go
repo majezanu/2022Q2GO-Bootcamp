@@ -21,10 +21,19 @@ func NewPokemonWithError(pokemon *model.Pokemon, err error) PokemonWithError {
 	return PokemonWithError{fmt.Sprint(err), *pokemon}
 }
 
+func errorIsForUnprocessableEntity(err error) bool {
+	return errors.Is(err, PokemonIdFormatError) ||
+		errors.Is(err, BadPokemonFieldError) ||
+		errors.Is(err, PokemonAlreadyExistError) ||
+		errors.Is(err, PokemonItemsError) ||
+		errors.Is(err, PokemonIdTypeError) ||
+		errors.Is(err, PokemonItemsPerWorkerError)
+}
+
 func NewErrorResponse(err error) ErrorResponse {
 	httpStatusCode := http.StatusInternalServerError
 	switch {
-	case errors.Is(err, PokemonIdFormatError) || errors.Is(err, BadPokemonFieldError) || errors.Is(err, PokemonAlreadyExistError):
+	case errorIsForUnprocessableEntity(err):
 		httpStatusCode = http.StatusUnprocessableEntity
 	case errors.Is(err, PokemonNotFoundError):
 		httpStatusCode = http.StatusNotFound

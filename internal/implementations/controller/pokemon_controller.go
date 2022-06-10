@@ -23,6 +23,7 @@ func (p pokemonController) GetMultiple(c controller.Context) error {
 	if err := c.Bind(&payload); err != nil {
 		return responseError(c, err)
 	}
+
 	pokemonList, err := p.pokemonInteractor.GetMultiple(payload.IdType, payload.Items, payload.ItemsPerWorker)
 	if err != nil {
 		return responseError(c, err)
